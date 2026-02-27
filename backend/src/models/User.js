@@ -30,6 +30,10 @@ const userSchema = new mongoose.Schema({
     enum: ['student', 'staff', 'admin'],
     default: 'student'
   },
+  profilePhotoPath: {
+    type: String,
+    trim: true
+  },
   accountStatus: {
     type: String,
     enum: ['PendingApproval', 'Active', 'Suspended', 'Rejected'],

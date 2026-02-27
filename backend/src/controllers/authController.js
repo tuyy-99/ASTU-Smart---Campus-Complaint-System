@@ -199,6 +199,11 @@ exports.updateProfile = asyncHandler(async (req, res, next) => {
     user.name = name;
   }
 
+  // Optional profile photo upload
+  if (req.file) {
+    user.profilePhotoPath = `uploads/profile/${req.file.filename}`;
+  }
+
   await user.save();
 
   res.status(200).json({
@@ -233,5 +238,40 @@ exports.changePassword = asyncHandler(async (req, res, next) => {
   res.status(200).json({
     success: true,
     message: 'Password changed successfully'
+  });
+});
+
+// @desc    Delete profile photo
+// @route   DELETE /api/auth/profile-photo
+// @access  Private
+exports.deleteProfilePhoto = asyncHandler(async (req, res, next) => {
+  const user = await User.findById(req.user.id);
+
+  if (!user) {
+    return next(new AppError('User not found', 404));
+  }
+
+  // Delete the file from filesystem if it exists
+  if (user.profilePhotoPath) {
+    const fs = require('fs');
+    const path = require('path');
+    const filePath = path.join(__dirname, '../../', user.profilePhotoPath);
+    
+    if (fs.existsSync(filePath)) {
+      try {
+        fs.unlinkSync(filePath);
+      } catch (error) {
+        console.error('Error deleting profile photo file:', error);
+      }
+    }
+    
+    user.profilePhotoPath = null;
+    await user.save();
+  }
+
+  res.status(200).json({
+    success: true,
+    message: 'Profile photo deleted successfully',
+    data: user
   });
 });
