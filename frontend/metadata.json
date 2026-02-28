@@ -1,0 +1,9 @@
+{
+  "name": "ASTU Smart Complaint & Issue Tracking System",
+  "description": "A modern, secure, and efficient platform for students and staff to report and manage campus issues at ASTU.",
+  "requestFramePermissions": [
+    "camera",
+    "microphone",
+    "geolocation"
+  ]
+}
