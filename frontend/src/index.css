@@ -1,0 +1,189 @@
+@import "tailwindcss";
+@custom-variant dark (&:where(.dark, .dark *));
+
+@theme {
+  --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, monospace;
+}
+
+@layer base {
+  :root {
+    --brand-gradient: linear-gradient(135deg, #064e3b 0%, #059669 100%);
+    --student-gradient: linear-gradient(135deg, #10b981 0%, #34d399 100%);
+    --staff-gradient: linear-gradient(135deg, #3b82f6 0%, #60a5fa 100%);
+    --admin-gradient: linear-gradient(135deg, #8b5cf6 0%, #a78bfa 100%);
+  }
+
+  body {
+    @apply antialiased text-slate-900 transition-colors selection:bg-emerald-100 selection:text-emerald-900 dark:text-slate-100 dark:selection:bg-emerald-900/30 dark:selection:text-emerald-100;
+    background-image: url('/images/astu-main-building.jpg');
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+    position: relative;
+    min-height: 100vh;
+  }
+
+  /* Blur effect on background image */
+  body::after {
+    content: "";
+    position: fixed;
+    inset: 0;
+    background-image: url('/images/astu-main-building.jpg');
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+    filter: blur(3px);
+    z-index: -1;
+    pointer-events: none;
+  }
+
+  /* Enhanced background overlay - darker with better readability */
+  body::before {
+    content: "";
+    position: fixed;
+    inset: 0;
+    background: linear-gradient(to br, rgba(15, 23, 42, 0.80) 0%, rgba(15, 23, 42, 0.75) 45%, rgba(5, 46, 22, 0.70) 100%);
+    z-index: 0;
+    pointer-events: none;
+    transition: background 0.3s ease;
+  }
+
+  .dark body::before {
+    background: linear-gradient(to br, rgba(2, 6, 23, 0.88) 0%, rgba(15, 23, 42, 0.85) 45%, rgba(5, 46, 22, 0.80) 100%);
+  }
+
+  #root {
+    position: relative;
+    z-index: 1;
+  }
+
+  input,
+  textarea,
+  select {
+    @apply text-slate-900 dark:text-slate-100;
+  }
+}
+
+@layer components {
+  /* Glass morphism panels */
+  .glass-panel {
+    @apply bg-white/95 backdrop-blur-xl border border-white/30 dark:bg-slate-900/95 dark:border-slate-800/60;
+    box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.1);
+  }
+
+  .dark .glass-panel {
+    box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3);
+  }
+
+  /* Role-based background overlays */
+  .bg-role-student {
+    background-image: 
+      linear-gradient(135deg, rgba(16, 185, 129, 0.1) 0%, rgba(52, 211, 153, 0.05) 100%),
+      url('/images/astu-main-building.jpg');
+  }
+
+  .bg-role-staff {
+    background-image: 
+      linear-gradient(135deg, rgba(59, 130, 246, 0.1) 0%, rgba(96, 165, 250, 0.05) 100%),
+      url('/images/astu-main-building.jpg');
+  }
+
+  .bg-role-admin {
+    background-image: 
+      linear-gradient(135deg, rgba(139, 92, 246, 0.1) 0%, rgba(167, 139, 250, 0.05) 100%),
+      url('/images/astu-main-building.jpg');
+  }
+
+  /* Page background wrapper */
+  .page-bg-wrapper {
+    position: relative;
+    min-height: 100vh;
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+  }
+
+  .page-bg-wrapper::before {
+    content: "";
+    position: fixed;
+    inset: 0;
+    z-index: 0;
+    pointer-events: none;
+  }
+
+  /* Brand gradients */
+  .brand-gradient-text {
+    @apply bg-clip-text text-transparent bg-gradient-to-r from-emerald-600 via-emerald-500 to-teal-500;
+  }
+
+  .student-gradient-text {
+    @apply bg-clip-text text-transparent bg-gradient-to-r from-emerald-600 to-emerald-400;
+  }
+
+  .staff-gradient-text {
+    @apply bg-clip-text text-transparent bg-gradient-to-r from-blue-600 to-blue-400;
+  }
+
+  .admin-gradient-text {
+    @apply bg-clip-text text-transparent bg-gradient-to-r from-purple-600 to-purple-400;
+  }
+
+  /* Enhanced card styles */
+  .card-modern {
+    @apply bg-white/95 backdrop-blur-xl border border-slate-200/80 dark:bg-slate-900/95 dark:border-slate-800/80;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    transition: all 0.3s ease;
+  }
+
+  .dark .card-modern {
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.3), 0 2px 4px -1px rgba(0, 0, 0, 0.2);
+  }
+
+  .card-modern:hover {
+    @apply border-emerald-300/50 dark:border-emerald-700/50;
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+    transform: translateY(-2px);
+  }
+
+  .dark .card-modern:hover {
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.4), 0 4px 6px -2px rgba(0, 0, 0, 0.3);
+  }
+
+  /* Better text contrast utilities */
+  .text-readable {
+    @apply text-slate-700 dark:text-slate-200;
+  }
+
+  .text-readable-muted {
+    @apply text-slate-600 dark:text-slate-300;
+  }
+
+  .text-readable-subtle {
+    @apply text-slate-500 dark:text-slate-400;
+  }
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  @apply bg-transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  @apply bg-slate-300 dark:bg-slate-700 rounded-full hover:bg-slate-400 dark:hover:bg-slate-600 transition-colors;
+}
+
+/* Smooth transitions for theme changes */
+* {
+  transition-property: background-color, border-color, color, fill, stroke;
+  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+  transition-duration: 150ms;
+}
