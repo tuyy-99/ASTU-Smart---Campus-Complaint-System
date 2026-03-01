@@ -43,7 +43,7 @@ const startServer = async () => {
   const server = http.createServer(app);
   socketService.initialize(server);
   
-  server.listen(PORT, () => {
+  server.listen(PORT, '0.0.0.0', () => {
     console.log(`Server running on port ${PORT}`);
     console.log(`WebSocket server ready`);
   });
