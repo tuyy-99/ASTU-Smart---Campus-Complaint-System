@@ -27,6 +27,10 @@ type RegistrationRequest = {
 
 const STATIC_BASE_URL = (import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000').replace(/\/api$/i, '').replace(/\/$/, '');
 const toAssetUrl = (pathValue: string) => {
+  // If it's already a full URL (Cloudinary), return as-is
+  if (pathValue && (pathValue.startsWith('http://') || pathValue.startsWith('https://'))) {
+    return pathValue;
+  }
   const clean = String(pathValue || '').replace(/^[\\/]+/, '').replace(/\\/g, '/');
   return `${STATIC_BASE_URL}/${clean}`;
 };
