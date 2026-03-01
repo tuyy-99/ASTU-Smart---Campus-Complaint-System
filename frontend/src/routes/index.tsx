@@ -26,6 +26,7 @@ import ChatbotPage from '../pages/ChatbotPage';
 import ResolutionVerificationPage from '../pages/ResolutionVerificationPage';
 import ProfilePage from '../pages/ProfilePage';
 import MapPage from '../pages/MapPage';
+import AuditLogPage from '../pages/AuditLogPage';
 
 export const AppRoutes = () => {
   return (
@@ -62,6 +63,7 @@ export const AppRoutes = () => {
           <Route element={<MainLayout><ComplaintsListPage /></MainLayout>} path="/admin/complaints" />
           <Route element={<MainLayout><AnalyticsPage /></MainLayout>} path="/admin/analytics" />
           <Route element={<MainLayout><UserManagementPage /></MainLayout>} path="/admin/users" />
+          <Route element={<MainLayout><AuditLogPage /></MainLayout>} path="/admin/audit-logs" />
         </Route>
 
         <Route element={<MainLayout><ComplaintDetailsPage /></MainLayout>} path="/complaints/:id" />

@@ -11,18 +11,7 @@ import { PageHero } from '../components/ui/PageHero';
 import api from '../api/client';
 import { User, UserRole } from '../types';
 import { mapUser } from '../api/mappers';
-
-const DEPARTMENTS = [
-  'School of Electrical & Computer Engineering',
-  'School of Mechanical Engineering',
-  'School of Civil Engineering & Architecture',
-  'School of Computing & Informatics',
-  'School of Applied Sciences',
-  'School of Chemical & Food Engineering',
-  'School of Humanities & Social Sciences',
-  'Registrar & Academic Affairs',
-  'Student Services & Welfare'
-];
+import { STAFF_DEPARTMENTS } from '../constants/departments';
 
 type RegistrationRequest = {
   _id: string;
@@ -167,7 +156,7 @@ const UserManagementPage: React.FC = () => {
               value={createForm.department}
               onChange={(e) => setCreateForm((p) => ({ ...p, department: e.target.value }))}
             >
-              {DEPARTMENTS.map((dep) => (
+              {STAFF_DEPARTMENTS.map((dep) => (
                 <option key={dep} value={dep}>{dep}</option>
               ))}
             </select>

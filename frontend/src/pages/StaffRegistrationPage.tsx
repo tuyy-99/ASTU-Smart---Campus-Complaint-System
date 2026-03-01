@@ -17,6 +17,7 @@ type RegistrationRequest = {
   name: string;
   email: string;
   studentId: string;
+  department?: string;
   profilePhotoPath?: string;
   idPhotoPath: string;
   status: 'pending' | 'approved' | 'rejected';
@@ -246,6 +247,9 @@ const StaffRegistrationPage: React.FC = () => {
                   <p className="font-semibold">{request.name}</p>
                   <p className="text-xs text-slate-500">{request.email}</p>
                   <p className="text-xs text-slate-500">{request.studentId}</p>
+                  {request.department && (
+                    <p className="text-xs text-slate-500">Department: {request.department}</p>
+                  )}
                 </div>
                 <Badge
                   variant={

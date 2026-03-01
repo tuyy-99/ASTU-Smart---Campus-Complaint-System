@@ -22,6 +22,8 @@ const complaintSchema = z.object({
 
 type ComplaintFormValues = z.infer<typeof complaintSchema>;
 
+import { COMPLAINT_DEPARTMENTS } from '../constants/departments';
+
 const CATEGORIES = [
   { label: 'Academic', value: 'academic', icon: BookOpen, color: 'text-blue-600' },
   { label: 'Infrastructure', value: 'infrastructure', icon: Building2, color: 'text-orange-600' },
@@ -30,18 +32,6 @@ const CATEGORIES = [
   { label: 'Cafeteria', value: 'cafeteria', icon: Utensils, color: 'text-rose-600' },
   { label: 'Transport', value: 'transport', icon: Bus, color: 'text-cyan-600' },
   { label: 'Other', value: 'other', icon: HelpCircle, color: 'text-slate-600' }
-];
-
-const DEPARTMENTS = [
-  'School of Electrical & Computer Engineering',
-  'School of Mechanical Engineering',
-  'School of Civil Engineering & Architecture',
-  'School of Computing & Informatics',
-  'School of Applied Sciences',
-  'School of Chemical & Food Engineering',
-  'School of Humanities & Social Sciences',
-  'Registrar & Academic Affairs',
-  'Student Services & Welfare'
 ];
 
 const PRIORITIES = [
@@ -175,7 +165,7 @@ const CreateComplaintPage: React.FC = () => {
                 {...register('department')}
               >
                 <option value="">Select a department</option>
-                {DEPARTMENTS.map(dep => (
+                {COMPLAINT_DEPARTMENTS.map(dep => (
                   <option key={dep} value={dep}>{dep}</option>
                 ))}
               </select>

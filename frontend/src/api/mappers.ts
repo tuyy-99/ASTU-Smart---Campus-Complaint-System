@@ -36,29 +36,33 @@ const mapRemark = (raw: any): Remark => ({
   createdAt: raw?.createdAt || raw?.addedAt || new Date().toISOString()
 });
 
-export const mapComplaint = (raw: any): Complaint => ({
-  id: toId(raw),
-  createdById: toId(raw?.createdBy),
-  title: raw?.title || '',
-  description: raw?.description || '',
-  category: raw?.category || '',
-  priority: raw?.priority || 'medium',
-  status: raw?.status,
-  studentId: raw?.createdBy?.studentId || '',
-  studentName: raw?.createdBy?.name || '',
-  department: raw?.department,
-  attachments: Array.isArray(raw?.attachments) ? raw.attachments.map(toAttachmentUrl).filter(Boolean) : [],
-  remarks: Array.isArray(raw?.remarks) ? raw.remarks.map(mapRemark) : [],
-  resolutionVerification: raw?.resolutionVerification
-    ? {
-        status: raw?.resolutionVerification?.status,
-        comment: raw?.resolutionVerification?.comment,
-        verifiedAt: raw?.resolutionVerification?.verifiedAt
-      }
-    : undefined,
-  createdAt: raw?.createdAt || new Date().toISOString(),
-  updatedAt: raw?.updatedAt || new Date().toISOString()
-});
+export const mapComplaint = (raw: any): Complaint => {
+  const isAnonymous = raw?.isAnonymous === true || raw?.isAnonymous === 'true';
+  return {
+    id: toId(raw),
+    createdById: toId(raw?.createdBy),
+    title: raw?.title || '',
+    description: raw?.description || '',
+    category: raw?.category || '',
+    priority: raw?.priority || 'medium',
+    status: raw?.status,
+    studentId: isAnonymous ? '' : (raw?.createdBy?.studentId || ''),
+    studentName: isAnonymous ? 'Anonymous' : (raw?.createdBy?.name || ''),
+    department: raw?.department,
+    isAnonymous: isAnonymous || false,
+    attachments: Array.isArray(raw?.attachments) ? raw.attachments.map(toAttachmentUrl).filter(Boolean) : [],
+    remarks: Array.isArray(raw?.remarks) ? raw.remarks.map(mapRemark) : [],
+    resolutionVerification: raw?.resolutionVerification
+      ? {
+          status: raw?.resolutionVerification?.status,
+          comment: raw?.resolutionVerification?.comment,
+          verifiedAt: raw?.resolutionVerification?.verifiedAt
+        }
+      : undefined,
+    createdAt: raw?.createdAt || new Date().toISOString(),
+    updatedAt: raw?.updatedAt || new Date().toISOString()
+  };
+};
 
 const mapNotificationType = (value: string): Notification['type'] => {
   if (value === 'status_updated') return 'status_change';

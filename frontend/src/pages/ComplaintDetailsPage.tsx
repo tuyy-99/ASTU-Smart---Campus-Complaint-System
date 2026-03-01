@@ -23,19 +23,10 @@ import api from '../api/client';
 import { Complaint, ComplaintStatus } from '../types';
 import { mapComplaint } from '../api/mappers';
 
+import { COMPLAINT_DEPARTMENTS } from '../constants/departments';
+
 const ComplaintDetailsPage: React.FC = () => {
   const CATEGORIES = ['academic', 'infrastructure', 'hostel', 'library', 'cafeteria', 'transport', 'other'];
-  const DEPARTMENTS = [
-    'School of Electrical & Computer Engineering',
-    'School of Mechanical Engineering',
-    'School of Civil Engineering & Architecture',
-    'School of Computing & Informatics',
-    'School of Applied Sciences',
-    'School of Chemical & Food Engineering',
-    'School of Humanities & Social Sciences',
-    'Registrar & Academic Affairs',
-    'Student Services & Welfare'
-  ];
   const PRIORITIES = ['low', 'medium', 'high'];
 
   const { id } = useParams<{ id: string }>();
@@ -84,7 +75,21 @@ const ComplaintDetailsPage: React.FC = () => {
     },
   });
 
-  // Complaint editing is no longer supported in the strict workflow.
+  const updateComplaintMutation = useMutation({
+    mutationFn: async (data: typeof editForm) => {
+      const response = await api.put(`/api/complaints/${id}`, data);
+      return response.data;
+    },
+    onSuccess: () => {
+      toast.success('Complaint updated successfully');
+      setIsEditing(false);
+      queryClient.invalidateQueries({ queryKey: ['complaint', id] });
+      queryClient.invalidateQueries({ queryKey: ['complaints'] });
+    },
+    onError: (error: any) => {
+      toast.error(error.response?.data?.error || 'Failed to update complaint');
+    },
+  });
 
   const verifyResolutionMutation = useMutation({
     mutationFn: async ({ action, comment }: { action: 'confirm' | 'reopen'; comment?: string }) => {
@@ -121,10 +126,13 @@ const ComplaintDetailsPage: React.FC = () => {
   }
 
   if (error || !complaint) {
+    const is403 = error && typeof error === 'object' && 'response' in error && (error as { response?: { status?: number } }).response?.status === 403;
     return (
       <div className="flex flex-col items-center justify-center rounded-2xl border border-slate-200 p-12 dark:border-slate-800">
         <AlertCircle size={48} className="mb-4 text-rose-500" />
-        <p className="text-lg font-medium">Complaint not found</p>
+        <p className="text-lg font-medium">
+          {is403 ? 'You don’t have permission to view this complaint.' : 'Complaint not found.'}
+        </p>
         <Button variant="outline" className="mt-4" onClick={() => navigate(-1)}>
           Go Back
         </Button>
@@ -132,11 +140,11 @@ const ComplaintDetailsPage: React.FC = () => {
     );
   }
 
-  const canUpdateStatus = isStaff; // Only staff can update status in the strict workflow
+  const canUpdateStatus = isStaff; // Only staff can update status
   const isOwner =
     complaint.createdById === (user?.id || '') ||
     complaint.studentId === (user?.studentId || '');
-  const canEditComplaint = false;
+  const canEditComplaint = isStudent && isOwner; // Students can edit their own complaints
   const isAwaitingStudentVerification =
     complaint.status === ComplaintStatus.RESOLVED &&
     isStudent &&
@@ -158,6 +166,11 @@ const ComplaintDetailsPage: React.FC = () => {
               <ArrowLeft size={16} className="mr-1" />
               Back
             </Button>
+            {canEditComplaint && (
+              <Button variant="outline" size="sm" onClick={() => setIsEditing(!isEditing)}>
+                {isEditing ? 'Cancel' : 'Edit'}
+              </Button>
+            )}
             <StatusBadge status={complaint.status} />
           </div>
         </PageHero>
@@ -171,9 +184,71 @@ const ComplaintDetailsPage: React.FC = () => {
               <h2 className="text-lg font-bold">Description</h2>
             </div>
 
-            <p className="whitespace-pre-wrap text-slate-700 dark:text-slate-300 leading-relaxed">
-              {complaint.description}
-            </p>
+            {isEditing ? (
+              <div className="space-y-4">
+                <div>
+                  <label className="block text-sm font-medium mb-2">Title</label>
+                  <input
+                    type="text"
+                    value={editForm.title}
+                    onChange={(e) => setEditForm({ ...editForm, title: e.target.value })}
+                    className="w-full rounded-lg border border-slate-300 px-3 py-2 dark:border-slate-700 dark:bg-slate-800"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium mb-2">Description</label>
+                  <textarea
+                    value={editForm.description}
+                    onChange={(e) => setEditForm({ ...editForm, description: e.target.value })}
+                    rows={6}
+                    className="w-full rounded-lg border border-slate-300 px-3 py-2 dark:border-slate-700 dark:bg-slate-800"
+                  />
+                </div>
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-sm font-medium mb-2">Category</label>
+                    <select
+                      value={editForm.category}
+                      onChange={(e) => setEditForm({ ...editForm, category: e.target.value })}
+                      className="w-full rounded-lg border border-slate-300 px-3 py-2 dark:border-slate-700 dark:bg-slate-800"
+                    >
+                      {CATEGORIES.map(cat => (
+                        <option key={cat} value={cat}>{cat}</option>
+                      ))}
+                    </select>
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium mb-2">Priority</label>
+                    <select
+                      value={editForm.priority}
+                      onChange={(e) => setEditForm({ ...editForm, priority: e.target.value })}
+                      className="w-full rounded-lg border border-slate-300 px-3 py-2 dark:border-slate-700 dark:bg-slate-800"
+                    >
+                      {PRIORITIES.map(pri => (
+                        <option key={pri} value={pri}>{pri}</option>
+                      ))}
+                    </select>
+                  </div>
+                </div>
+                <div className="flex gap-2">
+                  <Button 
+                    onClick={() => {
+                      updateComplaintMutation.mutate(editForm);
+                    }}
+                    isLoading={updateComplaintMutation.isPending}
+                  >
+                    Save Changes
+                  </Button>
+                  <Button variant="outline" onClick={() => setIsEditing(false)}>
+                    Cancel
+                  </Button>
+                </div>
+              </div>
+            ) : (
+              <p className="whitespace-pre-wrap text-slate-700 dark:text-slate-300 leading-relaxed">
+                {complaint.description}
+              </p>
+            )}
             
             {complaint.attachments.length > 0 && (
               <div className="mt-8 space-y-3">
@@ -346,8 +421,12 @@ const ComplaintDetailsPage: React.FC = () => {
               </div>
               <div>
                 <p className="text-xs font-bold uppercase tracking-wider text-slate-500">Submitted By</p>
-                <p className="text-sm font-medium">{complaint.studentName}</p>
-                <p className="text-xs text-slate-500">{complaint.studentId}</p>
+                <p className="text-sm font-medium">
+                  {complaint.isAnonymous ? 'Anonymous' : complaint.studentName}
+                </p>
+                {!complaint.isAnonymous && (
+                  <p className="text-xs text-slate-500">{complaint.studentId}</p>
+                )}
               </div>
               <div>
                 <p className="text-xs font-bold uppercase tracking-wider text-slate-500">Date Submitted</p>

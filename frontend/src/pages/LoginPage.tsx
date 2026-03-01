@@ -88,7 +88,7 @@ const LoginPage: React.FC = () => {
           backgroundAttachment: "fixed",
         }}
       />
-      <div className="fixed inset-0 z-0 bg-gradient-to-br from-emerald-900/40 via-slate-900/50 to-slate-900/60 dark:from-emerald-900/60 dark:via-slate-950/70 dark:to-slate-950/80" />
+      <div className="fixed inset-0 z-0 bg-linear-to-br from-emerald-900/40 to-slate-900/50 to-slate-900/60 dark:from-emerald-900/60 dark:via-slate-950/70 dark:to-slate-950/80" />
 
       <motion.div
         initial={{ opacity: 0, scale: 0.95, y: 20 }}
@@ -102,11 +102,11 @@ const LoginPage: React.FC = () => {
               initial={{ scale: 0 }}
               animate={{ scale: 1 }}
               transition={{ delay: 0.2, type: "spring" }}
-              className="mx-auto mb-6 flex h-20 w-20 items-center justify-center rounded-3xl bg-gradient-to-br from-emerald-500 to-emerald-600 text-white shadow-xl shadow-emerald-500/30"
+              className="mx-auto mb-6 flex h-20 w-20 items-center justify-center rounded-3xl bg-linear-to-br from-emerald-500 to-emerald-600 text-white shadow-xl shadow-emerald-500/30"
             >
               <FileText size={36} />
             </motion.div>
-            <h1 className="text-4xl font-extrabold tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-emerald-600 to-emerald-400 mb-2">
+            <h1 className="text-4xl font-extrabold tracking-tight bg-clip-text text-transparent bg-linear-to-r from-emerald-600 to-emerald-400 mb-2">
               Welcome Back
             </h1>
             <p className="mt-2 text-slate-600 dark:text-slate-400 text-lg">
@@ -118,12 +118,12 @@ const LoginPage: React.FC = () => {
           <div className="mb-6 flex gap-2 p-1 bg-slate-100 dark:bg-slate-800 rounded-xl">
             <button
               type="button"
-              onClick={() => setLoginType('student')}
+              onClick={() => setLoginType("student")}
               className={cn(
-                'flex-1 flex items-center justify-center gap-2 py-3 px-4 rounded-lg font-semibold text-sm transition-all',
-                loginType === 'student'
-                  ? 'bg-emerald-500 text-white shadow-lg shadow-emerald-500/30'
-                  : 'text-slate-600 dark:text-slate-400 hover:text-emerald-600 dark:hover:text-emerald-400'
+                "flex-1 flex items-center justify-center gap-2 py-3 px-4 rounded-lg font-semibold text-sm transition-all",
+                loginType === "student"
+                  ? "bg-emerald-500 text-white shadow-lg shadow-emerald-500/30"
+                  : "text-slate-600 dark:text-slate-400 hover:text-emerald-600 dark:hover:text-emerald-400",
               )}
             >
               <GraduationCap size={18} />
@@ -131,12 +131,12 @@ const LoginPage: React.FC = () => {
             </button>
             <button
               type="button"
-              onClick={() => setLoginType('staff')}
+              onClick={() => setLoginType("staff")}
               className={cn(
-                'flex-1 flex items-center justify-center gap-2 py-3 px-4 rounded-lg font-semibold text-sm transition-all',
-                loginType === 'staff'
-                  ? 'bg-blue-500 text-white shadow-lg shadow-blue-500/30'
-                  : 'text-slate-600 dark:text-slate-400 hover:text-blue-600 dark:hover:text-blue-400'
+                "flex-1 flex items-center justify-center gap-2 py-3 px-4 rounded-lg font-semibold text-sm transition-all",
+                loginType === "staff"
+                  ? "bg-blue-500 text-white shadow-lg shadow-blue-500/30"
+                  : "text-slate-600 dark:text-slate-400 hover:text-blue-600 dark:hover:text-blue-400",
               )}
             >
               <Users size={18} />
@@ -154,8 +154,11 @@ const LoginPage: React.FC = () => {
             </motion.div>
           )}
 
-          {loginType === 'student' ? (
-            <form onSubmit={studentForm.handleSubmit(onStudentSubmit)} className="space-y-4">
+          {loginType === "student" ? (
+            <form
+              onSubmit={studentForm.handleSubmit(onStudentSubmit)}
+              className="space-y-4"
+            >
               <Input
                 label="Student ID"
                 type="text"
@@ -201,7 +204,10 @@ const LoginPage: React.FC = () => {
               </Button>
             </form>
           ) : (
-            <form onSubmit={staffForm.handleSubmit(onStaffSubmit)} className="space-y-4">
+            <form
+              onSubmit={staffForm.handleSubmit(onStaffSubmit)}
+              className="space-y-4"
+            >
               <Input
                 label="Email Address"
                 type="email"
@@ -248,7 +254,7 @@ const LoginPage: React.FC = () => {
             </form>
           )}
 
-          {loginType === 'student' && (
+          {loginType === "student" && (
             <div className="mt-8 text-center text-sm text-slate-600 dark:text-slate-400">
               Need an account?{" "}
               <Link

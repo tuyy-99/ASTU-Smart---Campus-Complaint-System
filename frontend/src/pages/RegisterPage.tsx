@@ -9,11 +9,13 @@ import { Button } from '../components/ui/Button';
 import { Input } from '../components/ui/Input';
 import { Card } from '../components/ui/Card';
 import api from '../api/client';
+import { STUDENT_DEPARTMENTS } from '../constants/departments';
 
 const registerRequestSchema = z.object({
   name: z.string().min(2, 'Name must be at least 2 characters'),
   email: z.string().email('Invalid email address'),
-  studentId: z.string().regex(/^UGR\/\d{5}\/\d{2}$/, 'Format must be UGR/00000/16')
+  studentId: z.string().regex(/^UGR\/\d{5}\/\d{2}$/, 'Format must be UGR/00000/16'),
+  department: z.string().min(1, 'Department is required')
 });
 
 type RegisterRequestValues = z.infer<typeof registerRequestSchema>;
@@ -47,6 +49,7 @@ const RegisterPage: React.FC = () => {
       formData.append('name', data.name);
       formData.append('email', data.email);
       formData.append('studentId', data.studentId.toUpperCase());
+      formData.append('department', data.department);
       if (profilePhoto) {
         formData.append('profilePhoto', profilePhoto);
       }
@@ -142,7 +145,22 @@ const RegisterPage: React.FC = () => {
               {...register('studentId')}
               className="bg-white/80 dark:bg-slate-800/80 border-slate-300 dark:border-slate-700"
             />
-            <div className="hidden md:block" />
+
+            <div className="space-y-1.5">
+              <label className="text-sm font-medium text-slate-700 dark:text-slate-300">Department</label>
+              <select
+                {...register('department')}
+                className="h-11 w-full rounded-xl border border-slate-300 bg-white/80 px-3 text-sm dark:border-slate-700 dark:bg-slate-800/80"
+              >
+                <option value="">Select School/Department</option>
+                {STUDENT_DEPARTMENTS.map((dept) => (
+                  <option key={dept} value={dept}>{dept}</option>
+                ))}
+              </select>
+              {errors.department && (
+                <p className="text-sm text-red-600 dark:text-red-400">{errors.department.message}</p>
+              )}
+            </div>
 
             <div className="space-y-1.5">
               <label className="text-sm font-medium text-slate-700 dark:text-slate-300">Profile Photo (Optional)</label>
