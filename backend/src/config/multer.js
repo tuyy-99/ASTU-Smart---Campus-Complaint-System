@@ -1,21 +1,29 @@
 ﻿const multer = require('multer');
 const path = require('path');
-const fs = require('fs');
+const { createCloudinaryStorage } = require('./cloudinary');
 
-const uploadDir = path.join(__dirname, '..', '..', 'uploads', 'complaints');
-if (!fs.existsSync(uploadDir)) {
-  fs.mkdirSync(uploadDir, { recursive: true });
-}
+// Use Cloudinary if configured, otherwise fall back to local storage
+const useCloudinary = process.env.CLOUDINARY_CLOUD_NAME && process.env.CLOUDINARY_API_KEY;
 
-const storage = multer.diskStorage({
-  destination: (req, file, cb) => {
-    cb(null, uploadDir);
-  },
-  filename: (req, file, cb) => {
-    const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
-    cb(null, file.fieldname + '-' + uniqueSuffix + path.extname(file.originalname).toLowerCase());
+let storage;
+if (useCloudinary) {
+  storage = createCloudinaryStorage('complaints');
+} else {
+  const fs = require('fs');
+  const uploadDir = path.join(__dirname, '..', '..', 'uploads', 'complaints');
+  if (!fs.existsSync(uploadDir)) {
+    fs.mkdirSync(uploadDir, { recursive: true });
   }
-});
+  storage = multer.diskStorage({
+    destination: (req, file, cb) => {
+      cb(null, uploadDir);
+    },
+    filename: (req, file, cb) => {
+      const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
+      cb(null, file.fieldname + '-' + uniqueSuffix + path.extname(file.originalname).toLowerCase());
+    }
+  });
+}
 
 const fileFilter = (req, file, cb) => {
   const allowedTypes = (process.env.ALLOWED_FILE_TYPES || 'image/jpeg,image/png,application/pdf')

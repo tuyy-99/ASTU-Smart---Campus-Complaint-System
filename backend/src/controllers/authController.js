@@ -49,8 +49,8 @@ exports.submitRegistrationRequest = asyncHandler(async (req, res, next) => {
     name,
     email,
     studentId: normalizedStudentId,
-    profilePhotoPath: profilePhoto ? `uploads/registration-requests/${profilePhoto.filename}` : undefined,
-    idPhotoPath: `uploads/registration-requests/${idPhoto.filename}`
+    profilePhotoPath: profilePhoto ? (profilePhoto.path || `uploads/registration-requests/${profilePhoto.filename}`) : undefined,
+    idPhotoPath: idPhoto.path || `uploads/registration-requests/${idPhoto.filename}`
   });
 
   const staffMembers = await User.find({ role: 'staff', isActive: true }).select('name email');
@@ -201,7 +201,7 @@ exports.updateProfile = asyncHandler(async (req, res, next) => {
 
   // Optional profile photo upload
   if (req.file) {
-    user.profilePhotoPath = `uploads/profile/${req.file.filename}`;
+    user.profilePhotoPath = req.file.path || `uploads/profile/${req.file.filename}`;
   }
 
   await user.save();
@@ -251,17 +251,33 @@ exports.deleteProfilePhoto = asyncHandler(async (req, res, next) => {
     return next(new AppError('User not found', 404));
   }
 
-  // Delete the file from filesystem if it exists
+  // Delete the file from storage if it exists
   if (user.profilePhotoPath) {
-    const fs = require('fs');
-    const path = require('path');
-    const filePath = path.join(__dirname, '../../', user.profilePhotoPath);
-    
-    if (fs.existsSync(filePath)) {
+    // Check if it's a Cloudinary URL
+    if (user.profilePhotoPath.includes('cloudinary.com')) {
       try {
-        fs.unlinkSync(filePath);
+        const { cloudinary } = require('../config/cloudinary');
+        // Extract public_id from URL
+        const urlParts = user.profilePhotoPath.split('/');
+        const filename = urlParts[urlParts.length - 1].split('.')[0];
+        const folder = urlParts.slice(-3, -1).join('/');
+        const publicId = `${folder}/${filename}`;
+        await cloudinary.uploader.destroy(publicId);
       } catch (error) {
-        console.error('Error deleting profile photo file:', error);
+        console.error('Error deleting Cloudinary photo:', error);
+      }
+    } else {
+      // Local filesystem
+      const fs = require('fs');
+      const path = require('path');
+      const filePath = path.join(__dirname, '../../', user.profilePhotoPath);
+      
+      if (fs.existsSync(filePath)) {
+        try {
+          fs.unlinkSync(filePath);
+        } catch (error) {
+          console.error('Error deleting profile photo file:', error);
+        }
       }
     }
     

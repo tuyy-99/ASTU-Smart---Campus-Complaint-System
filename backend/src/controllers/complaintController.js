@@ -58,8 +58,8 @@ exports.createComplaint = asyncHandler(async (req, res, next) => {
     const attachments = await Promise.all(req.files.map(async (file) => {
       const extractedText = await extractFileText(file);
       return {
-        filename: file.filename,
-        path: `uploads/complaints/${file.filename}`,
+        filename: file.filename || file.originalname,
+        path: file.path || `uploads/complaints/${file.filename}`,
         mimetype: file.mimetype,
         size: file.size,
         extractedText
