@@ -330,6 +330,9 @@ const LandingPage: React.FC = () => {
         </div>
       </section>
 
+      {/* Campus Showcase Section */}
+      <CampusShowcase isDark={isDark} />
+
       {/* Features Section */}
       <section className="py-24 relative overflow-hidden">
         {/* Background with image showing through */}

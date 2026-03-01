@@ -91,7 +91,7 @@ const StaffLoginPage: React.FC = () => {
             <Input
               label="Email Address"
               type="email"
-              placeholder="staff@astu.edu.et"
+              placeholder="your.email@example.com"
               error={errors.email?.message}
               {...register('email')}
               className="bg-white/80 dark:bg-slate-800/80 border-slate-300 dark:border-slate-700"
