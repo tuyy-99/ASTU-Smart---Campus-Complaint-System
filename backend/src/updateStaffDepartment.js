@@ -10,11 +10,11 @@ const updateStaffDepartment = async () => {
     // Update the staff user's department
     const result = await User.updateOne(
       { email: 'staff@astu.edu.et', role: 'staff' },
-      { $set: { department: 'Infrastructure Office' } }
+      { $set: { department: 'Infrastructure & Maintenance' } }
     );
 
     if (result.modifiedCount > 0) {
-      console.log('✅ Staff user department updated to "Infrastructure Office"');
+      console.log('✅ Staff user department updated to "Infrastructure & Maintenance"');
     } else {
       console.log('ℹ️  No staff user found or department already correct');
     }

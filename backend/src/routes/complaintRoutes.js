@@ -35,6 +35,14 @@ router.patch(
   validate,
   complaintController.updateComplaint
 );
+router.put(
+  '/:id',
+  protect,
+  objectIdValidation,
+  complaintUpdateValidation,
+  validate,
+  complaintController.updateComplaint
+);
 
 router.patch(
   '/:id/status',

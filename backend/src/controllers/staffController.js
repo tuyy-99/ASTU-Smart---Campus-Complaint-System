@@ -2,6 +2,7 @@ const User = require('../models/User');
 const RegistrationRequest = require('../models/RegistrationRequest');
 const { AppError, asyncHandler } = require('../utils/errorHandler');
 const EmailService = require('../services/emailService');
+const AuditService = require('../services/auditService');
 const crypto = require('crypto');
 
 const generateAutoPassword = () => {
@@ -102,6 +103,16 @@ exports.suspendStudent = asyncHandler(async (req, res, next) => {
   student.isActive = false;
   await student.save();
 
+  // Log student suspension
+  await AuditService.log({
+    userId: req.user._id,
+    action: 'STUDENT_SUSPENDED',
+    resource: 'user',
+    resourceId: student._id,
+    details: `Suspended student account: ${student.name} (${student.studentId})`,
+    req
+  });
+
   res.status(200).json({
     success: true,
     message: 'Student account suspended successfully',
@@ -124,6 +135,16 @@ exports.reactivateStudent = asyncHandler(async (req, res, next) => {
   student.accountStatus = 'Active';
   student.isActive = true;
   await student.save();
+
+  // Log student reactivation
+  await AuditService.log({
+    userId: req.user._id,
+    action: 'STUDENT_REACTIVATED',
+    resource: 'user',
+    resourceId: student._id,
+    details: `Reactivated student account: ${student.name} (${student.studentId})`,
+    req
+  });
 
   res.status(200).json({
     success: true,
@@ -170,7 +191,7 @@ exports.approveRegistrationRequest = asyncHandler(async (req, res, next) => {
     email: request.email,
     role: 'student',
     studentId: request.studentId,
-    department: req.user.department,
+    department: request.department,
     password: generatedPassword,
     accountStatus: 'Active'
   });
@@ -188,6 +209,17 @@ exports.approveRegistrationRequest = asyncHandler(async (req, res, next) => {
   } catch (error) {
     emailSent = false;
   }
+
+  // Log registration approval
+  await AuditService.log({
+    userId: req.user._id,
+    action: 'REGISTRATION_APPROVED',
+    resource: 'registration',
+    resourceId: request._id,
+    details: `Approved registration for ${request.name} (${request.studentId})`,
+    metadata: { studentId: request.studentId, email: request.email },
+    req
+  });
 
   res.status(200).json({
     success: true,
@@ -230,6 +262,17 @@ exports.rejectRegistrationRequest = asyncHandler(async (req, res, next) => {
   } catch (error) {
     emailSent = false;
   }
+
+  // Log registration rejection
+  await AuditService.log({
+    userId: req.user._id,
+    action: 'REGISTRATION_REJECTED',
+    resource: 'registration',
+    resourceId: request._id,
+    details: `Rejected registration for ${request.name} (${request.studentId})`,
+    metadata: { studentId: request.studentId, reason: rejectionReason },
+    req
+  });
 
   res.status(200).json({
     success: true,
@@ -325,6 +368,17 @@ exports.createStudent = asyncHandler(async (req, res, next) => {
   } catch (error) {
     emailSent = false;
   }
+
+  // Log student creation
+  await AuditService.log({
+    userId: req.user._id,
+    action: 'STUDENT_CREATED',
+    resource: 'user',
+    resourceId: student._id,
+    details: `Created student account: ${student.name} (${student.studentId})`,
+    metadata: { studentId: student.studentId, department: student.department },
+    req
+  });
 
   res.status(201).json({
     success: true,

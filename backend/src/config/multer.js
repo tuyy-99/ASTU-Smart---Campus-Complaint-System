@@ -1,12 +1,12 @@
 ﻿const multer = require('multer');
 const path = require('path');
-const { createCloudinaryStorage } = require('./cloudinary');
 
 // Use Cloudinary if configured, otherwise fall back to local storage
 const useCloudinary = process.env.CLOUDINARY_CLOUD_NAME && process.env.CLOUDINARY_API_KEY;
 
 let storage;
 if (useCloudinary) {
+  const { createCloudinaryStorage } = require('./cloudinary');
   storage = createCloudinaryStorage('complaints');
 } else {
   const fs = require('fs');

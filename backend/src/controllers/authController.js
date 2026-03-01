@@ -4,6 +4,7 @@ const RegistrationRequest = require('../models/RegistrationRequest');
 const { AppError, asyncHandler } = require('../utils/errorHandler');
 const { sendTokenResponse } = require('../utils/jwt');
 const EmailService = require('../services/emailService');
+const AuditService = require('../services/auditService');
 
 // @desc    Public registration removed
 // @route   POST /api/auth/register
@@ -16,7 +17,7 @@ exports.register = asyncHandler(async (req, res, next) => {
 // @route   POST /api/auth/register-request
 // @access  Public
 exports.submitRegistrationRequest = asyncHandler(async (req, res, next) => {
-  const { name, email, studentId } = req.body;
+  const { name, email, studentId, department } = req.body;
 
   const existingUserByEmail = await User.findOne({ email });
   if (existingUserByEmail) {
@@ -49,6 +50,7 @@ exports.submitRegistrationRequest = asyncHandler(async (req, res, next) => {
     name,
     email,
     studentId: normalizedStudentId,
+    department,
     profilePhotoPath: profilePhoto ? (profilePhoto.path || `uploads/registration-requests/${profilePhoto.filename}`) : undefined,
     idPhotoPath: idPhoto.path || `uploads/registration-requests/${idPhoto.filename}`
   });
@@ -88,17 +90,52 @@ exports.login = asyncHandler(async (req, res, next) => {
   }
 
   if (!user) {
+    await AuditService.log({
+      action: 'LOGIN_FAILED',
+      resource: 'auth',
+      details: 'Login failed: invalid credentials',
+      status: 'Failed',
+      req
+    });
     return next(new AppError('Invalid credentials', 401));
   }
 
   if (!user.isActive) {
+    await AuditService.log({
+      userId: user._id,
+      actorRole: user.role,
+      action: 'LOGIN_FAILED',
+      resource: 'auth',
+      details: 'Login failed: account deactivated',
+      status: 'Failed',
+      req
+    });
     return next(new AppError('Account is deactivated', 401));
   }
 
   const isPasswordMatch = await user.comparePassword(password);
   if (!isPasswordMatch) {
+    await AuditService.log({
+      userId: user._id,
+      actorRole: user.role,
+      action: 'LOGIN_FAILED',
+      resource: 'auth',
+      details: 'Login failed: invalid password',
+      status: 'Failed',
+      req
+    });
     return next(new AppError('Invalid credentials', 401));
   }
+
+  // Log successful login
+  await AuditService.log({
+    userId: user._id,
+    actorRole: user.role,
+    action: 'LOGIN',
+    resource: 'auth',
+    details: 'User logged in successfully',
+    req
+  });
 
   sendTokenResponse(user, 200, res);
 });
@@ -171,6 +208,15 @@ exports.resetPassword = asyncHandler(async (req, res, next) => {
   user.passwordResetExpires = undefined;
   await user.save();
 
+  // Log password reset
+  await AuditService.log({
+    userId: user._id,
+    action: 'PASSWORD_RESET',
+    resource: 'auth',
+    details: `User reset password`,
+    req
+  });
+
   sendTokenResponse(user, 200, res);
 });
 
@@ -206,6 +252,16 @@ exports.updateProfile = asyncHandler(async (req, res, next) => {
 
   await user.save();
 
+  // Log profile update
+  await AuditService.log({
+    userId: user._id,
+    action: 'PROFILE_UPDATE',
+    resource: 'user',
+    resourceId: user._id,
+    details: `User updated profile`,
+    req
+  });
+
   res.status(200).json({
     success: true,
     message: 'Profile updated successfully',
@@ -234,6 +290,15 @@ exports.changePassword = asyncHandler(async (req, res, next) => {
   // Update password
   user.password = newPassword;
   await user.save();
+
+  // Log password change
+  await AuditService.log({
+    userId: user._id,
+    action: 'PASSWORD_CHANGE',
+    resource: 'auth',
+    details: `User changed password`,
+    req
+  });
 
   res.status(200).json({
     success: true,

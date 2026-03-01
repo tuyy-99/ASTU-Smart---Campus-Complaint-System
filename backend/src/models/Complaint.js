@@ -77,10 +77,6 @@ const complaintSchema = new mongoose.Schema({
     ref: 'User',
     required: true
   },
-  isAnonymous: {
-    type: Boolean,
-    default: false
-  },
   assignedTo: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'User'

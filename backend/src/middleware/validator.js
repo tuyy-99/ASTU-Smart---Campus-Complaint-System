@@ -118,7 +118,15 @@ exports.complaintValidation = [
     .notEmpty().withMessage('Department is required'),
   body('priority')
     .optional()
-    .isIn(['low', 'medium', 'high']).withMessage('Invalid priority')
+    .isIn(['low', 'medium', 'high']).withMessage('Invalid priority'),
+  body('isAnonymous')
+    .optional()
+    .custom((value) => {
+      if (value === true || value === 'true' || value === '1' || value === 1) return true;
+      if (value === false || value === 'false' || value === '0' || value === 0 || value === '' || value == null) return true;
+      return false;
+    })
+    .withMessage('Invalid isAnonymous value')
 ];
 
 exports.complaintUpdateValidation = [

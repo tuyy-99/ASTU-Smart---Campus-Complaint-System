@@ -42,7 +42,7 @@ const seedUsers = async () => {
         email: 'staff@astu.edu.et',
         password: 'staff123',
         role: 'staff',
-        department: 'Infrastructure Office'
+        department: 'Infrastructure & Maintenance'
       });
       console.log('✅ Staff user created');
     }

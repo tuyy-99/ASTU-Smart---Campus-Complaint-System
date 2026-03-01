@@ -29,11 +29,11 @@ const CATEGORY_KEYWORDS = {
 
 const CATEGORY_TO_DEPARTMENT = {
   academic: 'Academic Affairs',
-  infrastructure: 'Infrastructure Office',
-  hostel: 'Hostel Office',
+  infrastructure: 'Infrastructure & Maintenance',
+  hostel: 'Hostel Services',
   library: 'Library Services',
   cafeteria: 'Cafeteria Services',
-  transport: 'Transport Office',
+  transport: 'Transport Services',
   other: 'Student Affairs'
 };
 

@@ -21,6 +21,10 @@ const registrationRequestSchema = new mongoose.Schema({
     uppercase: true,
     match: [/^UGR\/\d{5}\/\d{2}$/, 'Student ID must follow format UGR/00000/16']
   },
+  department: {
+    type: String,
+    trim: true
+  },
   profilePhotoPath: {
     type: String
   },

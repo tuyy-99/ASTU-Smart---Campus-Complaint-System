@@ -5,6 +5,8 @@ const Notification = require('../models/Notification');
 const analyticsService = require('../services/analyticsService');
 const EmailService = require('../services/emailService');
 const NotificationService = require('../services/notificationService');
+const AuditService = require('../services/auditService');
+const { maskAnonymousCreator } = require('../utils/maskAnonymous');
 const { AppError, asyncHandler } = require('../utils/errorHandler');
 
 const generateAutoPassword = () => {
@@ -15,13 +17,13 @@ const generateAutoPassword = () => {
 
 exports.getAllComplaints = asyncHandler(async (req, res, next) => {
   const complaints = await Complaint.find()
-    .populate('createdBy', 'name email role department')
+    .populate('createdBy', 'name email role department studentId')
     .sort({ createdAt: -1 });
 
   res.status(200).json({
     success: true,
     count: complaints.length,
-    data: complaints
+    data: complaints.map(maskAnonymousCreator)
   });
 });
 
@@ -36,6 +38,7 @@ exports.exportComplaints = asyncHandler(async (req, res, next) => {
   ];
 
   complaints.forEach((item) => {
+    const isAnonymous = item.isAnonymous === true || item.isAnonymous === 'true';
     rows.push([
       String(item._id),
       item.title || '',
@@ -43,9 +46,9 @@ exports.exportComplaints = asyncHandler(async (req, res, next) => {
       item.department || '',
       item.status || '',
       item.priority || '',
-      item.createdBy?.name || '',
-      item.createdBy?.email || '',
-      item.createdBy?.studentId || '',
+      isAnonymous ? 'Anonymous' : (item.createdBy?.name || ''),
+      isAnonymous ? 'Anonymous' : (item.createdBy?.email || ''),
+      isAnonymous ? 'Anonymous' : (item.createdBy?.studentId || ''),
       item.createdAt ? new Date(item.createdAt).toISOString() : '',
       item.updatedAt ? new Date(item.updatedAt).toISOString() : ''
     ]);
@@ -67,6 +70,16 @@ exports.exportComplaints = asyncHandler(async (req, res, next) => {
     res.setHeader('Content-Type', 'text/csv; charset=utf-8');
     res.setHeader('Content-Disposition', 'attachment; filename="complaints-export.csv"');
   }
+
+  await AuditService.log({
+    userId: req.user._id,
+    actorRole: req.user.role,
+    action: 'COMPLAINT_EXPORT',
+    resource: 'complaint',
+    details: `Exported ${complaints.length} complaints as ${format === 'excel' ? 'Excel' : 'CSV'}`,
+    metadata: { format: format === 'excel' ? 'xls' : 'csv', count: complaints.length },
+    req
+  });
 
   return res.status(200).send(content);
 });
@@ -127,6 +140,18 @@ exports.createUser = asyncHandler(async (req, res, next) => {
   } catch (error) {
     emailSent = false;
   }
+
+  // Log user creation
+  await AuditService.log({
+    userId: req.user._id,
+    actorRole: req.user.role,
+    action: 'USER_CREATED',
+    resource: 'user',
+    resourceId: user._id,
+    details: `Created staff account: ${user.name} (${user.email})`,
+    metadata: { role: user.role, department: user.department },
+    req
+  });
 
   res.status(201).json({
     success: true,
@@ -197,6 +222,18 @@ exports.deleteUser = asyncHandler(async (req, res, next) => {
   await Notification.deleteMany({ recipient: targetUser._id });
   await RegistrationRequest.deleteMany({
     $or: [{ email: targetUser.email }, { createdUser: targetUser._id }]
+  });
+
+  // Log user deactivation
+  await AuditService.log({
+    userId: req.user._id,
+    actorRole: req.user.role,
+    action: 'USER_DEACTIVATED',
+    resource: 'user',
+    resourceId: targetUser._id,
+    details: `Deactivated staff account: ${targetUser.name} (${targetUser.email})`,
+    metadata: { reason },
+    req
   });
 
   res.status(200).json({

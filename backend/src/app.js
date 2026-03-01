@@ -14,6 +14,7 @@ const staffRoutes = require('./routes/staffRoutes');
 const chatbotRoutes = require('./routes/chatbotRoutes');
 const notificationRoutes = require('./routes/notificationRoutes');
 const publicRoutes = require('./routes/publicRoutes');
+const auditRoutes = require('./routes/auditRoutes');
 
 const app = express();
 
@@ -42,6 +43,7 @@ app.use('/api/admin', adminRoutes);
 app.use('/api/staff', staffRoutes);
 app.use('/api/chatbot', chatbotRoutes);
 app.use('/api/notifications', notificationRoutes);
+app.use('/api/audit', auditRoutes);
 
 app.all('*', (req, res, next) => {
   next(new AppError(`Route not found: ${req.originalUrl}`, 404));
