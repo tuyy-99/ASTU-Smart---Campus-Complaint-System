@@ -333,91 +333,6 @@ const LandingPage: React.FC = () => {
       {/* Campus Showcase Section */}
       <CampusShowcase isDark={isDark} />
 
-      {/* Features Section */}
-      <section className="py-24 relative overflow-hidden">
-        {/* Background with image showing through */}
-        <div
-          className="absolute inset-0 z-0"
-          style={{
-            backgroundImage: isDark
-              ? "linear-gradient(135deg, rgba(2,6,23,0.85) 0%, rgba(2,6,23,0.80) 50%, rgba(6,95,70,0.75) 100%), url('/images/astu-main-building.jpg')"
-              : "linear-gradient(135deg, rgba(248,250,252,0.85) 0%, rgba(241,245,249,0.80) 50%, rgba(16,185,129,0.30) 100%), url('/images/astu-main-building.jpg')",
-            backgroundSize: 'cover, cover',
-            backgroundPosition: 'center, center',
-            backgroundRepeat: 'no-repeat, no-repeat',
-            backgroundAttachment: 'fixed, fixed'
-          }}
-        />
-        
-        <div className="relative z-10 mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-          <div className="rounded-[32px] border border-white/20 bg-white/70 backdrop-blur-2xl p-10 shadow-2xl dark:border-slate-800/70 dark:bg-slate-900/70 sm:p-14">
-            <div className="text-center mb-16">
-              <h2 className="text-3xl font-bold tracking-tight text-slate-900 dark:text-slate-100 sm:text-4xl">
-                Built for the ASTU Community
-              </h2>
-              <p className="mt-4 text-sm text-slate-600 dark:text-slate-400 sm:text-base">
-                Everything you need to manage campus life effectively.
-              </p>
-            </div>
-
-            <div className="grid grid-cols-1 gap-8 md:grid-cols-3">
-              {[
-              {
-                title: 'Smart Reporting',
-                description: 'Easily file complaints with multi-file attachments and detailed descriptions.',
-                icon: FileText,
-                color: 'bg-emerald-100 text-emerald-600'
-              },
-              {
-                title: 'Real-time Tracking',
-                description: 'Get instant notifications on status changes and administrative remarks.',
-                icon: Zap,
-                color: 'bg-amber-100 text-amber-600'
-              },
-              {
-                title: 'AI Assistance',
-                description: 'Our smart chatbot provides 24/7 guidance on filing and resolving issues.',
-                icon: MessageSquare,
-                color: 'bg-sky-100 text-sky-600'
-              },
-              {
-                title: 'Role-based Access',
-                description: 'Tailored experiences for Students, Staff, and Administrators.',
-                icon: Users,
-                color: 'bg-purple-100 text-purple-600'
-              },
-              {
-                title: 'Advanced Analytics',
-                description: 'Data-driven insights for administrators to improve campus services.',
-                icon: BarChart3,
-                color: 'bg-rose-100 text-rose-600'
-              },
-              {
-                title: 'Secure & Private',
-                description: 'Your data is protected with industry-standard encryption and security.',
-                icon: Shield,
-                color: 'bg-indigo-100 text-indigo-600'
-              }
-              ].map((feature, idx) => (
-                <motion.div
-                  key={idx}
-                  whileHover={{ y: -5 }}
-                  className="group"
-                >
-                  <Card className="h-full border-white/20 bg-white/60 backdrop-blur-xl transition-all hover:-translate-y-1.5 hover:border-emerald-400/60 hover:shadow-2xl dark:border-slate-800/70 dark:bg-slate-900/60">
-                    <div className={`mb-6 flex h-12 w-12 items-center justify-center rounded-xl ${feature.color}`}>
-                      <feature.icon size={24} />
-                    </div>
-                    <h3 className="text-xl font-bold mb-2 text-slate-900 dark:text-slate-100">{feature.title}</h3>
-                    <p className="text-slate-600 dark:text-slate-400 leading-relaxed">{feature.description}</p>
-                  </Card>
-                </motion.div>
-              ))}
-            </div>
-          </div>
-        </div>
-      </section>
-
       {/* Interactive Map Section */}
       <section className="py-24 relative overflow-hidden">
         {/* Background with image showing through */}
@@ -533,8 +448,90 @@ const LandingPage: React.FC = () => {
         </div>
       </section>
 
-      {/* Campus Showcase Section */}
-      <CampusShowcase isDark={isDark} />
+      {/* Features Section */}
+      <section className="py-24 relative overflow-hidden">
+        {/* Background with image showing through */}
+        <div
+          className="absolute inset-0 z-0"
+          style={{
+            backgroundImage: isDark
+              ? "linear-gradient(135deg, rgba(2,6,23,0.85) 0%, rgba(2,6,23,0.80) 50%, rgba(6,95,70,0.75) 100%), url('/images/astu-main-building.jpg')"
+              : "linear-gradient(135deg, rgba(248,250,252,0.85) 0%, rgba(241,245,249,0.80) 50%, rgba(16,185,129,0.30) 100%), url('/images/astu-main-building.jpg')",
+            backgroundSize: 'cover, cover',
+            backgroundPosition: 'center, center',
+            backgroundRepeat: 'no-repeat, no-repeat',
+            backgroundAttachment: 'fixed, fixed'
+          }}
+        />
+        
+        <div className="relative z-10 mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+          <div className="rounded-[32px] border border-white/20 bg-white/70 backdrop-blur-2xl p-10 shadow-2xl dark:border-slate-800/70 dark:bg-slate-900/70 sm:p-14">
+            <div className="text-center mb-16">
+              <h2 className="text-3xl font-bold tracking-tight text-slate-900 dark:text-slate-100 sm:text-4xl">
+                Built for the ASTU Community
+              </h2>
+              <p className="mt-4 text-sm text-slate-600 dark:text-slate-400 sm:text-base">
+                Everything you need to manage campus life effectively.
+              </p>
+            </div>
+
+            <div className="grid grid-cols-1 gap-8 md:grid-cols-3">
+              {[
+              {
+                title: 'Smart Reporting',
+                description: 'Easily file complaints with multi-file attachments and detailed descriptions.',
+                icon: FileText,
+                color: 'bg-emerald-100 text-emerald-600'
+              },
+              {
+                title: 'Real-time Tracking',
+                description: 'Get instant notifications on status changes and administrative remarks.',
+                icon: Zap,
+                color: 'bg-amber-100 text-amber-600'
+              },
+              {
+                title: 'AI Assistance',
+                description: 'Our smart chatbot provides 24/7 guidance on filing and resolving issues.',
+                icon: MessageSquare,
+                color: 'bg-sky-100 text-sky-600'
+              },
+              {
+                title: 'Role-based Access',
+                description: 'Tailored experiences for Students, Staff, and Administrators.',
+                icon: Users,
+                color: 'bg-purple-100 text-purple-600'
+              },
+              {
+                title: 'Advanced Analytics',
+                description: 'Data-driven insights for administrators to improve campus services.',
+                icon: BarChart3,
+                color: 'bg-rose-100 text-rose-600'
+              },
+              {
+                title: 'Secure & Private',
+                description: 'Your data is protected with industry-standard encryption and security.',
+                icon: Shield,
+                color: 'bg-indigo-100 text-indigo-600'
+              }
+              ].map((feature, idx) => (
+                <motion.div
+                  key={idx}
+                  whileHover={{ y: -5 }}
+                  className="group"
+                >
+                  <Card className="h-full border-white/20 bg-white/60 backdrop-blur-xl transition-all hover:-translate-y-1.5 hover:border-emerald-400/60 hover:shadow-2xl dark:border-slate-800/70 dark:bg-slate-900/60">
+                    <div className={`mb-6 flex h-12 w-12 items-center justify-center rounded-xl ${feature.color}`}>
+                      <feature.icon size={24} />
+                    </div>
+                    <h3 className="text-xl font-bold mb-2 text-slate-900 dark:text-slate-100">{feature.title}</h3>
+                    <p className="text-slate-600 dark:text-slate-400 leading-relaxed">{feature.description}</p>
+                  </Card>
+                </motion.div>
+              ))}
+            </div>
+          </div>
+        </div>
+      </section>
 
       {/* Stats Section - Industry-Leading Performance */}
       <section
